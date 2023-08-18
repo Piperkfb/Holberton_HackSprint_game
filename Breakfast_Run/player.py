@@ -13,7 +13,10 @@ class Player(pygame.sprite.Sprite):
         self.image == pygame.image.load("images/player.png")
 
     #animation
+    "Look up"
 
     #jump physics
+    "gravity physics"
 
     #moving
+    "basic up left right"

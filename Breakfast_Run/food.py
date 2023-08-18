@@ -11,3 +11,5 @@ class food():
     #spinning
 
     #falling parabola
+
+    #all food images

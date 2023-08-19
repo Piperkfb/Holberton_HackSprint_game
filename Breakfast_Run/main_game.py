@@ -14,7 +14,7 @@ WIDTH = 600
 ACC = 0.6
 FRIC = -0.12
 FPS = 60
-BACKGROUND = 
+BACKGROUND = pygame.image.load("background.png")
 
 #7 imgaes
 FOODS = ['images/bacon.png', 'images/biscuit.png', 'images/french_toast.png',

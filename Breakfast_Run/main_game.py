@@ -14,7 +14,7 @@ WIDTH = 600
 ACC = 0.6
 FRIC = -0.12
 FPS = 60
-BACKGROUND = pygame.image.load("background.png")
+BACKGROUND = pygame.image.load("images/background.png")
 
 #7 imgaes
 FOODS = ['images/bacon.png', 'images/biscuit.png', 'images/french_toast.png',
@@ -35,8 +35,10 @@ class Player(pygame.sprite.Sprite):
     #initilized
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((30, 30))
-        self.surf.fill((255, 255, 255))
+        self.surf = pygame.Surface((40, 60))
+        #self.surf.fill((0, 0, 0))
+        self.image = pygame.image.load('images/player.png')
+        self.image = pygame.transform.scale(self.image, (50, 70))
         self.rect = self.surf.get_rect()
 
         self.pos = vec((10, 385))
@@ -52,7 +54,7 @@ class Player(pygame.sprite.Sprite):
             self.vel.y = -12
 
     def move(self):
-        self.acc = vec(0,0.4)
+        self.acc = vec(-0.2,0.4)
    
         pressed_keys = pygame.key.get_pressed()            
         if pressed_keys[K_LEFT]:
@@ -86,7 +88,7 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.surf = pygame.Surface((WIDTH, 10))
-        self.surf.fill((0, 255, 0))
+        self.surf.fill((24, 204, 75))
         self.rect = self.surf.get_rect(center =(WIDTH/2, HEIGHT))
 
 
@@ -94,9 +96,9 @@ class Food():
     #initilizing
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((40, 40))
+        self.surf = pygame.Surface((50, 50))
         self.image = pygame.image.load(FOODS[random.randrange(0, 7)])
-        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image = pygame.transform.scale(self.image, (50, 50))
         #self.surf.fill((0, 0, 255))
         self.rect = self.surf.get_rect()
         self.center = 10
@@ -114,7 +116,7 @@ class Food():
         self.acc = vec(random.randrange(-8, 0) / 10, random.randrange(1, 2) / 10)
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
-        self.pos += self.vel + 0.2 * self.acc
+        self.pos += self.vel + 0.1 * self.acc
         self.rect.midbottom = self.pos
 
     def update(self):
@@ -124,10 +126,6 @@ class Food():
                 self.pos.y = hitt[0].rect.top + 1
                 self.vel.y = 0
 
-    #all food images
-
-        foods = ['images/bacon.png', 'images/biscuit.png', 'images/french_toast.png',
-                'images/fried_egg.png', 'images/hashbrowns.png', 'images/pancake.png', 'images/scrambled_eggs.png']
 
 class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
@@ -138,10 +136,36 @@ class Pigeon(pygame.sprite.Sprite):
     def move(self):
         self.add()
 
+class Background(pygame.sprite.Sprite):
+    def __init__(self):
+        self.bgimage = pygame.image.load('images/background.png')
+        self.rectBGimg = self.bgimage.get_rect()
+
+        self.bgY1 = 0
+        self.bgX1 = 0
+
+        self.bgY2 = 0
+        self.bgX2 = self.rectBGimg.width
+
+        self.moving_speed = 4
+        
+    def update(self):
+        self.bgX1 -= self.moving_speed
+        self.bgX2 -= self.moving_speed
+        if self.bgX1 <= -self.rectBGimg.width:
+            self.bgX1 = self.rectBGimg.width
+        if self.bgX2 <= -self.rectBGimg.width:
+            self.bgX2 = self.rectBGimg.width
+            
+    def render(self):
+        WINDOW.blit(self.bgimage, (self.bgX1, self.bgY1))
+        WINDOW.blit(self.bgimage, (self.bgX2, self.bgY2))
+
 P1 = Player()
 Plat = Platform()
 pigeon = Pigeon()
 food = Food()
+back_ground = Background()
 
 #Groups
 all_sprites = pygame.sprite.Group()
@@ -172,6 +196,9 @@ while True:
             pygame.quit()
             sys.exit()
 
+    back_ground.update()
+    back_ground.render()
+
     P1.update()
     P1.move()
     food.update()
@@ -181,8 +208,6 @@ while True:
         next_object += time_int
         time_int -= 10
         object_list.append(Food())
-
-    WINDOW.fill((0,0,0))
 
     for object in object_list[:]:
         collect = pygame.sprite.spritecollide(object, main_char, False)
@@ -194,11 +219,14 @@ while True:
             SCORE += 100
         
 
+    WINDOW.blit(Plat.surf, Plat.rect)
+    WINDOW.blit(P1.image, P1.rect)
 
-    for entity in all_sprites:
-        WINDOW.blit(entity.surf, entity.rect)
 
-    score_text = FONT.render("Score: " + str(SCORE), True, (255, 255, 255))
+    #for entity in all_sprites:
+        #WINDOW.blit(entity.surf, entity.rect)
+
+    score_text = FONT.render("Score: " + str(SCORE), True, (0, 0, 0))
     WINDOW.blit(score_text, (10, 10))
 
     pygame.display.update()

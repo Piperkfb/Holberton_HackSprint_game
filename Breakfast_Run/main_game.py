@@ -4,6 +4,9 @@ import pygame, sys
 from pygame.locals import *
 import random, time
 import images
+from time import sleep
+import pygame_menu
+from pygame_menu import themes
 
 pygame.init()
 
@@ -168,6 +171,10 @@ class Background(pygame.sprite.Sprite):
     def render(self):
         WINDOW.blit(self.bgimage, (self.bgX1, self.bgY1))
         WINDOW.blit(self.bgimage, (self.bgX2, self.bgY2))
+
+
+def start_game():
+    pass
 
 P1 = Player()
 Plat = Platform()

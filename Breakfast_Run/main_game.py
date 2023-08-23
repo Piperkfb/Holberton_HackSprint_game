@@ -22,6 +22,7 @@ FOODS = ['images/bacon.png', 'images/biscuit.png', 'images/french_toast.png',
 
 
 SCORE = 0
+HUNGER = 100
 FONT = pygame.font.SysFont(None, 30)
 
 FramePerSec = pygame.time.Clock()
@@ -87,7 +88,7 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((WIDTH, 10))
+        self.surf = pygame.Surface((WIDTH, 5))
         self.surf.fill((24, 204, 75))
         self.rect = self.surf.get_rect(center =(WIDTH/2, HEIGHT))
 
@@ -119,22 +120,27 @@ class Food():
         self.pos += self.vel + 0.1 * self.acc
         self.rect.midbottom = self.pos
 
-    def update(self):
-        hitt = pygame.sprite.spritecollide(food, ground, False)
-        if self.vel.y > 0:
-            if hitt:
-                self.pos.y = hitt[0].rect.top + 1
-                self.vel.y = 0
 
 
 class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.surf = pygame.Surface((30, 30))
-        self.surf.fill
+        self.image = pygame.image.load('images/pigeon.png')
+        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.rect = self.surf.get_rect()
 
-    def move(self):
-        self.add()
+        self.pos = vec((550, 20))
+
+class Basket(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.surf = pygame.Surface((40, 40))
+        self.image = pygame.image.load('images/basket.png')
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.rect = self.surf.get_rect()
+
+        self.pos = vec((550, 40))
 
 class Background(pygame.sprite.Sprite):
     def __init__(self):
@@ -180,14 +186,16 @@ ground.add(Plat)
 main_char = pygame.sprite.Group()
 main_char.add(P1)
 
+
 #start game, run cutscene
 
 #main menu
 
 object_list = []
-time_int = 1500
+time_int = 1000
 next_object = 0
 collect = pygame.sprite.spritecollide(food, main_char, False)
+game_over = False
 
 #game start
 while True:
@@ -201,33 +209,54 @@ while True:
 
     P1.update()
     P1.move()
-    food.update()
 
     current_time = pygame.time.get_ticks()
     if current_time > next_object:
         next_object += time_int
-        time_int -= 10
+        time_int -= 5
         object_list.append(Food())
 
     for object in object_list[:]:
-        collect = pygame.sprite.spritecollide(object, main_char, False)
+        collect = pygame.sprite.spritecollide(object, main_char, False) 
+        hitt = pygame.sprite.spritecollide(object, ground, False)
         WINDOW.blit(object.image, object.rect)
-        object.fall()
-        object.update()
         if collect:
             object_list.remove(object)
             SCORE += 100
+            if (HUNGER + 5) > 100:
+                HUNGER = 100
+            else:
+                HUNGER +=5         
+        #hits ground and player at same time, maybe put a time break in favor of player
+        elif hitt:
+            object_list.remove(object)
+            HUNGER -= 10
+        object.fall()
         
+    if HUNGER <= 0:
+        game_over = True
+
+    if game_over:
+        game_over_text = FONT.render("You starved...", True, (255, 0, 0))
+        WINDOW.blit(game_over_text, (WIDTH / 2 - game_over_text.get_width() / 2, HEIGHT / 2 - game_over_text.get_height() / 2))
+        pygame.display.update()
+        time.sleep(2)
+        pygame.quit()
+        sys.exit()
 
     WINDOW.blit(Plat.surf, Plat.rect)
     WINDOW.blit(P1.image, P1.rect)
+    WINDOW.blit(pigeon)
+    WINDOW.blit(basket)
 
 
     #for entity in all_sprites:
         #WINDOW.blit(entity.surf, entity.rect)
 
     score_text = FONT.render("Score: " + str(SCORE), True, (0, 0, 0))
+    hunger_text = FONT.render("Hunger: " + str(HUNGER), True, (0, 0, 0))
     WINDOW.blit(score_text, (10, 10))
+    WINDOW.blit(hunger_text, (10, 30))
 
     pygame.display.update()
     FramePerSec.tick(FPS)

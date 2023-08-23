@@ -125,22 +125,24 @@ class Food():
 class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((30, 30))
+        self.surf = pygame.Surface((50, 50))
         self.image = pygame.image.load('images/pigeon.png')
-        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.surf.get_rect()
 
-        self.pos = vec((550, 20))
+        self.rect.x = 500
+        self.rect.y = 10
 
 class Basket(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((40, 40))
+        self.surf = pygame.Surface((50, 50))
         self.image = pygame.image.load('images/basket.png')
-        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.surf.get_rect()
 
-        self.pos = vec((550, 40))
+        self.rect.x = 500
+        self.rect.y = 50
 
 class Background(pygame.sprite.Sprite):
     def __init__(self):
@@ -172,6 +174,7 @@ Plat = Platform()
 pigeon = Pigeon()
 food = Food()
 back_ground = Background()
+basket = Basket()
 
 #Groups
 all_sprites = pygame.sprite.Group()
@@ -246,8 +249,8 @@ while True:
 
     WINDOW.blit(Plat.surf, Plat.rect)
     WINDOW.blit(P1.image, P1.rect)
-    WINDOW.blit(pigeon)
-    WINDOW.blit(basket)
+    WINDOW.blit(pigeon.image, pigeon.rect)
+    WINDOW.blit(basket.image, basket.rect)
 
 
     #for entity in all_sprites:
